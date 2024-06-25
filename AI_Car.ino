@@ -28,9 +28,19 @@
 PWM출력(p9) - PWM입력(파워)  
 */
 
-// 소프트웨어 시리얼은 아두이노 우노를 사용할 때는 아래 두 줄을 주석해제 합니다.
-//#include <SoftwareSerial.h>
-//SoftwareSerial mySerial(2, 3); // RX, TX
+// 이 정의어를 수정하지 마세요!
+#define UNO 0
+#define MEGA 1
+
+// 당신이 사용하는 보드로 변경하세요!
+#define BOARD MEGA  // 우노 
+// #define BOARD MEGA // 메가
+
+// 소프트웨어 시리얼은 아두이노 우노를 사용할 때 사용합니다.
+#if (BOARD == UNO)
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3); // RX, TX
+#endif
 
 // 스텝 모터 제어
 const int enA = 10;  // 구동 여부 결정
@@ -77,11 +87,15 @@ void setup() {
   //모니터링을 위한 시리얼 통신 설정
   Serial.begin(9600); // 시리얼 통신
   
-  //mySerial은 소프트웨어 시리얼입니다. 아두이노 우노를 사용할 때 주석을 해제해주세요.
-  //mySerial.begin(9600); // 블루투스 통신  
+  //mySerial은 아두이노 우노를 사용할 때 사용하는 시리얼입니다
+  #if (BOARD == UNO)
+  mySerial.begin(9600); // 블루투스 통신  
+  #endif
 
-  //Serial3는 아두이노 메가를 사용할 때 사용하는 시리얼입니다. 아두이노 우노를 사용하면 주석처리 하세요.
-  Serial3.begin(9600);           
+  //Serial3는 아두이노 메가를 사용할 때 사용하는 시리얼입니다.
+  #if (BOARD == MEGA)
+  Serial3.begin(9600);   
+  #endif        
 
   // 스텝모터 핀 모드 설정
   pinMode(dirPinLR,OUTPUT);
@@ -147,10 +161,14 @@ void loop() {
     }
   }
 
-  // 아두이노 메가를 쓸 때는 Serial3를 그대로 사용하고, 아두이노 우노를 쓸 때는 Serial3를 mySerial로 수정해주세요. 
   // 아두이노 메가를 쓸 때는 SW6 스위치를 3번쪽으로 옮기고, 아두이노 우노를 쓸 때는 SW6 스위치를 1번쪽으로 옮겨주세요.
+  #if (BOARD == UNO)
+  if (mySerial.available() ) {
+    cmd = mySerial.read();
+  #else
   if (Serial3.available() ){        // 블루투스 통신에 데이터가 있을 경우
     cmd = Serial3.read();     // 블루투스의 데이터(문자 한 글자)를 'cmd' 변수에 저장
+  #endif
   
     // cmd 변수의 데이터가 m이면 수동모드로, i면 앱모드로 modeState 변수의 상태를 바꿈
     if (cmd == 'm') {
