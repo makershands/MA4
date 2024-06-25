@@ -33,7 +33,7 @@ PWM출력(p9) - PWM입력(파워)
 #define MEGA 1
 
 // 당신이 사용하는 보드로 변경하세요!
-#define BOARD MEGA  // 우노 
+#define BOARD UNO  // 우노 
 // #define BOARD MEGA // 메가
 
 // 소프트웨어 시리얼은 아두이노 우노를 사용할 때 사용합니다.
